@@ -1,0 +1,88 @@
+#ifndef SHAPE_H
+#define SHAPE_H
+
+#include "shapelib/shapefil.h"
+#include <string>
+#include <qpoint.h>
+#include <qrect.h>
+#include <qpen.h>
+#include <QPainter>
+
+
+namespace zal_shape
+{
+
+
+class Shape
+{
+public:
+    Shape();
+    virtual ~Shape(void);
+    virtual void draw(QPainter* , QRect rcDest,
+                      double leftTopGeoX=0, double leftTopGeoY=0,bool usingShxTree=true) = 0 ;
+    std::string getName(void){return _name;}
+    void setName(std::string name) {_name = name;}
+
+    const inline SHPHandle getHandle() const {return _hShape;}
+
+    inline int getShapeType() {return _hShape->nShapeType;}
+
+
+    const inline QRect getGeographicRange() const {return _geoRangeRect;}
+
+
+    inline void setZoomFactor(double zoomFactor) {_zoom = zoomFactor;}
+
+
+    void computeRangeHit(double pdfRangeHit[4], QRect rcDest, double geoOffsetX, double geoOffsetY);
+
+    void loadXBase(char* pchDbfPath);
+
+
+
+protected:
+
+    void createFromHandle(SHPHandle hShape);
+    void computeRecordHit(QRect rcDest, double geoOffsetX, double geoOffsetY,bool usingShxTree);
+    QPoint geo2Screen(SHPObject* record, int verticeIndex,QRect rcDest);
+
+protected:
+
+
+
+    SHPHandle _hShape;
+    DBFHandle _handleXBase;
+
+    SHPTree* _tree;
+
+    QRect _geoRangeRect;
+
+    double _zoom;
+    double _preZoomFactor;
+
+    int* _recordsHit;
+    int _countRecordsHit;
+
+    double _geoCentralPointX;
+    double _geoCentralPointY;
+
+
+    double _geoWidth;
+    double _geoHeight;
+
+    std::string _name;
+
+};
+
+
+
+
+
+
+
+
+}
+
+
+
+#endif // SHAPE_H
